@@ -1,5 +1,5 @@
 plugins {
-    id 'com.android.application' version '8.1.0' apply false
+    id 'com.android.application' version '8.1.4' apply false
 }
 
 android {
@@ -21,6 +21,4 @@ android {
     }
 }
 
-dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-}
+dependencies {}
