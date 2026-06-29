@@ -1,14 +1,14 @@
 plugins {
-    id 'com.vidmiss.serverscanner'
-    id 'com.vidmiss.serverscanner'
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
 }
 
 android {
-    namespace 'lt.colornn'
+    namespace 'com.vidmiss.serverscanner'
     compileSdk 34
 
     defaultConfig {
-        applicationId "lt.colornn"
+        applicationId "com.vidmiss.serverscanner"
         minSdk 26
         targetSdk 34
         versionCode 1
