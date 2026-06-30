@@ -10,7 +10,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         webView = new WebView(this);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
         webView.addJavascriptInterface(new AndroidInterface(), "Android");
         webView.setWebViewClient(new WebViewClient());
-        
+
         setContentView(webView);
         webView.loadUrl("file:///android_asset/www/index.html");
     }
@@ -28,27 +28,33 @@ public class MainActivity extends AppCompatActivity {
     public class AndroidInterface {
         @JavascriptInterface
         public void startScan(String startIp, int count) {
-            runOnUiThread(() -> webView.evaluateJavascript("log('Scan started with " + count + " IPs from " + startIp + "');", null));
-            
-            // Simple safe scanning (prevents crash)
+            webView.evaluateJavascript("log('Scan started with " + count + " IPs from " + startIp + "');", null);
+
+            // Safe background thread
             new Thread(() -> {
                 try {
-                    for (int i = 0; i < Math.min(count, 5000); i++) {  // Limit to avoid freeze
-                        Thread.sleep(10); // prevent UI freeze
-                        runOnUiThread(() -> webView.evaluateJavascript("log('Scanning... " + i + "/" + count + "');", null));
+                    for (int i = 0; i < Math.min(count, 10000); i++) {   // Limited for safety
+                        final String logMsg = "Scanning... " + (i + 1) + "/" + count;
+                        runOnUiThread(() -> {
+                            webView.evaluateJavascript("log('" + logMsg + "');", null);
+                        });
+                        Thread.sleep(5); // Small delay to prevent freezing
                     }
-                } catch (Exception ignored) {}
+                    runOnUiThread(() -> webView.evaluateJavascript("log('Scan completed.');", null));
+                } catch (Exception e) {
+                    runOnUiThread(() -> webView.evaluateJavascript("log('Error: " + e.getMessage() + "');", null));
+                }
             }).start();
         }
 
         @JavascriptInterface
         public void stopScan() {
-            runOnUiThread(() -> webView.evaluateJavascript("log('Scan stopped');", null));
+            webView.evaluateJavascript("log('Scan stopped by user');", null);
         }
 
         @JavascriptInterface
         public void continueFromLast() {
-            runOnUiThread(() -> webView.evaluateJavascript("log('Continuing...');", null));
+            webView.evaluateJavascript("log('Continuing from last point...');", null);
         }
     }
 }
