@@ -1,4 +1,4 @@
-package org.example.mcscanner;
+package com.vidmiss.serverscanner;
 
 import android.os.Bundle;
 import android.webkit.*;
