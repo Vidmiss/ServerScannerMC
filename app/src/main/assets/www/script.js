@@ -11,16 +11,18 @@ function addFound(ip, info) {
     document.getElementById('count').textContent = foundCount;
     const div = document.createElement('div');
     div.style.cssText = 'background:#1f1f1f; padding:12px; margin:8px 0; border-left:4px solid #00ff9d; border-radius:6px;';
-    div.innerHTML = `<strong>\( {ip}</strong><br> \){info}`;
+    div.innerHTML = `<strong>${ip}</strong><br>${info}`;
     document.getElementById('found').appendChild(div);
 }
 
 function startScan() {
-    const ip = document.getElementById('firstIp').value;
+    const ip = document.getElementById('firstIp').value.trim();
     const count = parseInt(document.getElementById('ipCount').value) || 100000;
-    log("Scan started...");
+    log("Scan started with " + count + " IPs from " + ip);
     if (window.Android) {
         window.Android.startScan(ip, count);
+    } else {
+        log("Running in browser test mode");
     }
 }
 
