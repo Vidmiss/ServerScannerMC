@@ -6,8 +6,7 @@
 
     <application
         android:label="MC Server Scanner"
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher">
+        android:allowBackup="true">
 
         <activity 
             android:name=".MainActivity"
