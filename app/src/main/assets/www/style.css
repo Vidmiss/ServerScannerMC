@@ -1,63 +1,59 @@
 body { 
-    margin:0; 
-    padding:15px; 
-    background:#0f0f0f; 
-    color:#ddd; 
-    font-family:Arial, sans-serif; 
+    margin:0; padding:15px; background:#0f0f0f; color:#ddd; font-family:Arial, sans-serif; 
 }
-h1 { 
-    text-align:center; 
-    color:#00ff9d; 
-    margin-bottom:20px; 
-}
-h2 { 
-    color:#00cc77; 
-    margin-top:25px; 
-}
+h1 { text-align:center; color:#00ff9d; margin-bottom:20px; }
 
 .input-group { margin:15px 0; }
-label { 
-    display:block; 
-    margin-bottom:5px; 
-    color:#aaa; 
-}
+label { display:block; margin-bottom:5px; color:#aaa; }
 input { 
-    width:100%; 
-    padding:14px; 
-    background:#1f1f1f; 
-    border:1px solid #444; 
-    color:white; 
-    border-radius:8px; 
-    font-size:16px; 
+    width:100%; padding:14px; background:#1f1f1f; border:1px solid #444; 
+    color:white; border-radius:8px; font-size:16px; 
 }
 
 .buttons button, .continue {
-    padding:16px; 
-    margin:8px 4px; 
-    border:none; 
-    border-radius:8px; 
-    font-weight:bold; 
-    font-size:17px;
+    padding:16px; margin:8px 4px; border:none; border-radius:8px; 
+    font-weight:bold; font-size:17px; transition: all 0.2s;
 }
-.start { background:#238636; color:white; }
-.stop { background:#c22; color:white; }
-.continue { 
-    background:#d29922; 
-    color:white; 
-    width:100%; 
+.start { background:#1f7a2f; color:white; }
+.stop { background:#9f1f1f; color:white; }
+.continue { background:#b38b1d; color:white; width:100%; }
+
+.buttons button:active, .continue:active {
+    background: #0f4a1a !important; /* darker on click */
+    transform: scale(0.95);
 }
 
 .status { 
-    padding:12px; 
-    background:#1f1f1f; 
-    border-radius:8px; 
-    text-align:center; 
-    margin:15px 0; 
+    padding:12px; background:#1f1f1f; border-radius:8px; 
+    text-align:center; margin:15px 0; 
 }
+
+/* Tabs */
+.tabs {
+    display: flex;
+    margin: 15px 0 10px;
+    background: #1a1a1a;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.tab {
+    flex: 1;
+    padding: 14px;
+    background: #1a1a1a;
+    border: none;
+    color: #aaa;
+    font-weight: bold;
+}
+.tab.active {
+    background: #00aa77;
+    color: white;
+}
+
 .log, .found { 
     background:#1a1a1a; 
     padding:12px; 
     border-radius:8px; 
-    max-height:40vh; 
+    max-height:45vh; 
     overflow-y:auto; 
+    min-height: 150px;
 }
