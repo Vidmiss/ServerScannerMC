@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private WebView webView;
+    private volatile boolean isScanning = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,33 +29,58 @@ public class MainActivity extends AppCompatActivity {
     public class AndroidInterface {
         @JavascriptInterface
         public void startScan(String startIp, int count) {
+            if (isScanning) return;
+            isScanning = true;
+
             webView.evaluateJavascript("log('Scan started with " + count + " IPs from " + startIp + "');", null);
 
-            // Safe background thread
             new Thread(() -> {
                 try {
-                    for (int i = 0; i < Math.min(count, 10000); i++) {   // Limited for safety
-                        final String logMsg = "Scanning... " + (i + 1) + "/" + count;
-                        runOnUiThread(() -> {
-                            webView.evaluateJavascript("log('" + logMsg + "');", null);
-                        });
-                        Thread.sleep(5); // Small delay to prevent freezing
+                    String[] parts = startIp.split(":");
+                    String ipStr = parts[0];
+                    int port = parts.length > 1 ? Integer.parseInt(parts[1]) : 25565;
+
+                    String[] octets = ipStr.split("\\.");
+                    int base = Integer.parseInt(octets[3]);
+
+                    for (int i = 0; i < Math.min(count, 20000) && isScanning; i++) {
+                        int lastOctet = (base + i) % 256;
+                        String testIp = octets[0] + "." + octets[1] + "." + octets[2] + "." + lastOctet;
+
+                        try {
+                            java.net.Socket socket = new java.net.Socket();
+                            socket.connect(new java.net.InetSocketAddress(testIp, port), 600);
+                            socket.close();
+
+                            String result = "Open port 25565";
+                            runOnUiThread(() -> {
+                                webView.evaluateJavascript("addFound('" + testIp + ":" + port + "', '" + result + "');", null);
+                                webView.evaluateJavascript("log('FOUND: " + testIp + ":" + port + "');", null);
+                            });
+                        } catch (Exception ignored) {}
+                        
+                        Thread.sleep(8);
                     }
-                    runOnUiThread(() -> webView.evaluateJavascript("log('Scan completed.');", null));
+
+                    runOnUiThread(() -> webView.evaluateJavascript("scanCompleted();", null));
+
                 } catch (Exception e) {
                     runOnUiThread(() -> webView.evaluateJavascript("log('Error: " + e.getMessage() + "');", null));
+                } finally {
+                    isScanning = false;
                 }
             }).start();
         }
 
         @JavascriptInterface
         public void stopScan() {
-            webView.evaluateJavascript("log('Scan stopped by user');", null);
+            isScanning = false;
+            runOnUiThread(() -> webView.evaluateJavascript("log('Scan stopped by user');", null));
         }
 
         @JavascriptInterface
         public void continueFromLast() {
-            webView.evaluateJavascript("log('Continuing from last point...');", null);
+            runOnUiThread(() -> webView.evaluateJavascript("log('Continuing from last point...');", null));
         }
     }
 }
