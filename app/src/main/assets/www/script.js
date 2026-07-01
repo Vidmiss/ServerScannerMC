@@ -52,18 +52,17 @@ function continueScan() {
     if (window.Android) window.Android.continueFromLast();
 }
 
-// Called from Java when scan finishes
 function scanCompleted() {
     isScanning = false;
-    log("✅ Scan completed.");
     document.getElementById('status').textContent = "Scan completed";
+    log(" Scan completed.");
     
     // Show message if no servers found
     const foundDiv = document.getElementById('found');
     if (foundCount === 0) {
-        foundDiv.innerHTML = '<div style="text-align:center; padding:30px; color:#888;">No servers found :(</div>';
+        foundDiv.innerHTML = '<div style="text-align:center; padding:40px; color:#888; font-size:18px;">No servers found :(</div>';
     }
 }
 
-// Make Found Servers tab always accessible
-showTab(0); // Start on Log tab
+// Initialize tabs
+showTab(0);
