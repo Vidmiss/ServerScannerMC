@@ -11,7 +11,7 @@ function log(text) {
 function devLog(text) {
     if (!devMode) return;
     const div = document.getElementById('log');
-    div.innerHTML += `<div style="color:#00ffff;">[DEV ${new Date().toLocaleTimeString()}] ${text}</div>`;
+    div.innerHTML += `<div style="color:#00ffff; font-size:13px;">[DEV ${new Date().toLocaleTimeString()}] ${text}</div>`;
     div.scrollTop = div.scrollHeight;
 }
 
@@ -34,14 +34,14 @@ function showTab(n) {
 }
 
 function startScan() {
-    const ipInput = document.getElementById('firstIp').value.trim();
-    const countInput = document.getElementById('ipCount').value.trim();
+    const ip = document.getElementById('firstIp').value.trim();
+    let countInput = document.getElementById('ipCount').value.trim();
 
     // Devlog cheat code
     if (countInput.toLowerCase() === "devlog") {
         devMode = true;
-        log("🔧 Developer Mode Activated");
-        devLog("Dev mode enabled - detailed logs will appear");
+        log("🔧 Developer Mode Activated - Detailed logs enabled");
+        devLog("Dev mode ON");
         document.getElementById('ipCount').value = "10000";
         return;
     }
@@ -51,14 +51,14 @@ function startScan() {
     
     const count = parseInt(countInput) || 10000;
     
-    log("Scan started with " + count + " IPs from " + ipInput);
-    devLog("Starting scan - Target: " + ipInput + " | Count: " + count);
+    log("Scan started with " + count + " IPs from " + ip);
+    devLog("Starting scan → Target: " + ip + " | Count: " + count);
     document.getElementById('status').textContent = "Scanning...";
 
     if (window.Android) {
-        window.Android.startScan(ipInput, count);
+        window.Android.startScan(ip, count);
     } else {
-        log("Running in test mode (no Java bridge)");
+        log("Test mode (no Java bridge detected)");
     }
 }
 
@@ -66,7 +66,7 @@ function stopScan() {
     isScanning = false;
     if (window.Android) window.Android.stopScan();
     log("Scan stopped by user");
-    devLog("Scan stopped manually");
+    devLog("Scan manually stopped");
     document.getElementById('status').textContent = "Stopped";
 }
 
@@ -90,4 +90,4 @@ function scanCompleted() {
 
 // Initialize
 showTab(0);
-log("App started. Type 'devlog' in IP Count field to enable developer mode.");
+log("App ready. Type 'devlog' in IP Count field to enable developer mode.");
