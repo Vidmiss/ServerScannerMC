@@ -11,7 +11,7 @@ function log(text) {
 function devLog(text) {
     if (!devMode) return;
     const div = document.getElementById('log');
-    div.innerHTML += `<div style="color:#00ffff; font-size:13px;">[DEV ${new Date().toLocaleTimeString()}] ${text}</div>`;
+    div.innerHTML += `<div style="color:#00ff00; background:#000000; padding:3px 6px; margin:2px 0; font-family:monospace; white-space:pre; font-size:13px; line-height:1.4;">${text}</div>`;
     div.scrollTop = div.scrollHeight;
 }
 
@@ -22,6 +22,7 @@ function addFound(ip, info) {
     div.style.cssText = 'background:#1f1f1f; padding:12px; margin:8px 0; border-left:4px solid #00ff9d; border-radius:6px;';
     div.innerHTML = `<strong>\( {ip}</strong><br> \){info}`;
     document.getElementById('found').appendChild(div);
+    log("✅ Found server: " + ip);
 }
 
 function showTab(n) {
@@ -37,11 +38,12 @@ function startScan() {
     const ip = document.getElementById('firstIp').value.trim();
     let countInput = document.getElementById('ipCount').value.trim();
 
-    // Devlog cheat code
     if (countInput.toLowerCase() === "devlog") {
         devMode = true;
-        log("🔧 Developer Mode Activated - Detailed logs enabled");
-        devLog("Dev mode ON - verbose logging active");
+        log("Developer Mode Activated");
+        devLog("=================================");
+        devLog("     DEVLOG MODE ENABLED");
+        devLog("=================================");
         document.getElementById('ipCount').value = "10000";
         return;
     }
@@ -52,14 +54,13 @@ function startScan() {
     const count = parseInt(countInput) || 10000;
     
     log("Scan started with " + count + " IPs from " + ip);
-    devLog("Starting scan → Target: " + ip + " | Count: " + count);
+    devLog("START SCAN | Target: " + ip + " | Count: " + count);
     document.getElementById('status').textContent = "Scanning...";
 
     if (window.Android) {
         window.Android.startScan(ip, count);
     } else {
-        log("Test mode (no Java bridge detected)");
-        devLog("No Android bridge - running in browser test mode");
+        log("Test mode - no Java bridge");
     }
 }
 
@@ -67,7 +68,7 @@ function stopScan() {
     isScanning = false;
     if (window.Android) window.Android.stopScan();
     log("Scan stopped by user");
-    devLog("Scan manually stopped");
+    devLog("STOP command received");
     document.getElementById('status').textContent = "Stopped";
 }
 
@@ -80,8 +81,8 @@ function continueScan() {
 function scanCompleted() {
     isScanning = false;
     document.getElementById('status').textContent = "Scan completed";
-    log("✅ Scan completed.");
-    devLog("Scan finished successfully");
+    log("✅ Scan completed");
+    devLog("SCAN FINISHED");
     
     const foundDiv = document.getElementById('found');
     if (foundCount === 0) {
@@ -91,4 +92,4 @@ function scanCompleted() {
 
 // Initialize
 showTab(0);
-log("App ready. Type 'devlog' in the IP Count field to enable developer mode.");
+log("App ready. Type 'devlog' in IP Count field for Termux-style detailed log.");
