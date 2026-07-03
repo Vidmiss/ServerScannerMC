@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
             if (isScanning) return;
             isScanning = true;
 
-            saveLastIp(startIp);  // Save for continue
+            prefs.edit().putString("lastIp", startIp).apply();
 
             runOnUiThread(() -> {
                 webView.evaluateJavascript("log('Scan started with " + count + " IPs from " + startIp + "');", null);
@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
 
             new Thread(() -> {
                 int checked = 0;
-                int foundThisScan = 0;
 
                 try {
                     String[] parts = startIp.split(":");
@@ -60,9 +59,15 @@ public class MainActivity extends AppCompatActivity {
                         String testIp = octets[0] + "." + octets[1] + "." + octets[2] + "." + lastOctet + ":" + port;
                         checked++;
 
-                        if (checked % 200 == 0) {
+                        // Always send to devLog (every IP)
+                        final String currentIp = testIp;
+                        runOnUiThread(() -> {
+                            webView.evaluateJavascript("devLog('Checking → " + currentIp + "');", null);
+                        });
+
+                        if (checked % 300 == 0) {
                             final int current = checked;
-                            runOnUiThread(() -> webView.evaluateJavascript("log('Checked " + current + "/" + count + " IPs...');", null));
+                            runOnUiThread(() -> webView.evaluateJavascript("log('Progress: " + current + " IPs checked...');", null));
                         }
 
                         try {
@@ -70,10 +75,9 @@ public class MainActivity extends AppCompatActivity {
                             socket.connect(new java.net.InetSocketAddress(testIp.split(":")[0], port), 400);
                             socket.close();
 
-                            foundThisScan++;
                             runOnUiThread(() -> {
-                                webView.evaluateJavascript("addFound('" + testIp + "', 'Open port 25565');", null);
-                                webView.evaluateJavascript("log('✅ FOUND: " + testIp + "');", null);
+                                webView.evaluateJavascript("addFound('" + currentIp + "', 'Open port 25565');", null);
+                                webView.evaluateJavascript("log('✅ FOUND: " + currentIp + "');", null);
                             });
                         } catch (Exception ignored) {}
 
@@ -103,12 +107,11 @@ public class MainActivity extends AppCompatActivity {
         @JavascriptInterface
         public void continueFromLast() {
             String lastIp = prefs.getString("lastIp", "0.0.0.0:25565");
-            runOnUiThread(() -> webView.evaluateJavascript("log('Continuing from last: " + lastIp + "');", null));
-            startScan(lastIp, 10000);  // Continue with 10000 IPs
-        }
-
-        private void saveLastIp(String ip) {
-            prefs.edit().putString("lastIp", ip).apply();
+            runOnUiThread(() -> {
+                webView.evaluateJavascript("log('Continuing from last saved: " + lastIp + "');", null);
+                webView.evaluateJavascript("devLog('RESUMING FROM: " + lastIp + "');", null);
+            });
+            startScan(lastIp, 10000);
         }
     }
-                }
+                         }
