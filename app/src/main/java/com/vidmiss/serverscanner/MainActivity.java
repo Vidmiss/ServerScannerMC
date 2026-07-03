@@ -32,12 +32,14 @@ public class MainActivity extends AppCompatActivity {
             if (isScanning) return;
             isScanning = true;
 
-            webView.evaluateJavascript("log('Scan started with " + count + " IPs from " + startIp + "');", null);
-            webView.evaluateJavascript("document.getElementById('status').textContent = 'Scanning...';", null);
+            // Initial log
+            runOnUiThread(() -> {
+                webView.evaluateJavascript("log('Scan started with " + count + " IPs from " + startIp + "');", null);
+                webView.evaluateJavascript("document.getElementById('status').textContent = 'Scanning...';", null);
+            });
 
             new Thread(() -> {
                 int checked = 0;
-                int foundThisScan = 0;
 
                 try {
                     String[] parts = startIp.split(":");
@@ -52,33 +54,36 @@ public class MainActivity extends AppCompatActivity {
                         String testIp = octets[0] + "." + octets[1] + "." + octets[2] + "." + lastOctet + ":" + port;
                         checked++;
 
-                        if (checked % 100 == 0) {
-                            final int currentChecked = checked;
-                            runOnUiThread(() -> webView.evaluateJavascript(
-                                "log('Checked " + currentChecked + " IPs...');", null));
-                        }
+                        // Log every IP in dev mode
+                        final String currentIp = testIp;
+                        final int currentChecked = checked;
+
+                        runOnUiThread(() -> {
+                            webView.evaluateJavascript("devLog('Checking → " + currentIp + "');", null);
+                            if (currentChecked % 500 == 0) {
+                                webView.evaluateJavascript("log('Progress: " + currentChecked + "/" + count + " IPs checked');", null);
+                            }
+                        });
 
                         try {
                             java.net.Socket socket = new java.net.Socket();
-                            socket.connect(new java.net.InetSocketAddress(testIp.split(":")[0], port), 500);
+                            socket.connect(new java.net.InetSocketAddress(currentIp.split(":")[0], port), 400);
                             socket.close();
 
-                            foundThisScan++;
                             runOnUiThread(() -> {
-                                webView.evaluateJavascript("addFound('" + testIp + "', 'Open port 25565');", null);
-                                webView.evaluateJavascript("log('✅ FOUND: " + testIp + "');", null);
+                                webView.evaluateJavascript("addFound('" + currentIp + "', 'Open port 25565');", null);
+                                webView.evaluateJavascript("log('✅ FOUND: " + currentIp + "');", null);
                             });
                         } catch (Exception ignored) {}
 
-                        Thread.sleep(5);
+                        Thread.sleep(3); // Small delay for UI
                     }
 
-                    // Scan finished
+                    // Finish
                     final int finalChecked = checked;
-                    final int finalFound = foundThisScan;
                     runOnUiThread(() -> {
                         webView.evaluateJavascript("scanCompleted();", null);
-                        webView.evaluateJavascript("log('✅ Scan completed. Checked " + finalChecked + " IPs. Found " + finalFound + " servers.');", null);
+                        webView.evaluateJavascript("log('✅ Scan completed. Checked " + finalChecked + " IPs.');", null);
                     });
 
                 } catch (Exception e) {
@@ -100,4 +105,4 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> webView.evaluateJavascript("log('Continuing from last point...');", null));
         }
     }
-}
+                                                           }
