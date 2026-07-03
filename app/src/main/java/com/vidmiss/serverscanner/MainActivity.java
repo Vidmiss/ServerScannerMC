@@ -59,11 +59,8 @@ public class MainActivity extends AppCompatActivity {
                         String testIp = octets[0] + "." + octets[1] + "." + octets[2] + "." + lastOctet + ":" + port;
                         checked++;
 
-                        // Always send to devLog (every IP)
                         final String currentIp = testIp;
-                        runOnUiThread(() -> {
-                            webView.evaluateJavascript("devLog('Checking → " + currentIp + "');", null);
-                        });
+                        runOnUiThread(() -> webView.evaluateJavascript("devLog('Checking → " + currentIp + "');", null));
 
                         if (checked % 300 == 0) {
                             final int current = checked;
@@ -84,6 +81,10 @@ public class MainActivity extends AppCompatActivity {
                         Thread.sleep(5);
                     }
 
+                    // Save the next IP for continue
+                    String nextIp = calculateNextIp(startIp, checked);
+                    prefs.edit().putString("lastIp", nextIp).apply();
+
                     final int finalChecked = checked;
                     runOnUiThread(() -> {
                         webView.evaluateJavascript("scanCompleted();", null);
@@ -96,6 +97,22 @@ public class MainActivity extends AppCompatActivity {
                     isScanning = false;
                 }
             }).start();
+        }
+
+        private String calculateNextIp(String startIp, int checked) {
+            try {
+                String[] parts = startIp.split(":");
+                String ipStr = parts[0];
+                int port = parts.length > 1 ? Integer.parseInt(parts[1]) : 25565;
+
+                String[] octets = ipStr.split("\\.");
+                int base = Integer.parseInt(octets[3]);
+                int nextOctet = (base + checked) % 256;
+
+                return octets[0] + "." + octets[1] + "." + octets[2] + "." + nextOctet + ":" + port;
+            } catch (Exception e) {
+                return startIp;
+            }
         }
 
         @JavascriptInterface
@@ -114,4 +131,4 @@ public class MainActivity extends AppCompatActivity {
             startScan(lastIp, 10000);
         }
     }
-                         }
+                    }
