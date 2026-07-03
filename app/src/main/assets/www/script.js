@@ -19,11 +19,24 @@ function devLog(text) {
 function addFound(ip, info) {
     foundCount++;
     document.getElementById('count').textContent = foundCount;
+    
     const div = document.createElement('div');
     div.style.cssText = 'background:#1f1f1f; padding:12px; margin:8px 0; border-left:4px solid #00ff9d; border-radius:6px;';
     div.innerHTML = `<strong>\( {ip}</strong><br> \){info}`;
     document.getElementById('found').appendChild(div);
+    
     log("✅ FOUND: " + ip);
+    
+    // Save to persistent storage
+    if (window.Android) {
+        window.Android.saveFoundServer(ip, info);
+    }
+}
+
+function loadFoundServers() {
+    if (window.Android) {
+        window.Android.loadFoundServers();
+    }
 }
 
 function showTab(n) {
@@ -33,6 +46,8 @@ function showTab(n) {
     document.querySelectorAll('.tab').forEach((el, i) => {
         el.classList.toggle('active', i === n);
     });
+    
+    if (n === 1) loadFoundServers();
 }
 
 function startScan() {
