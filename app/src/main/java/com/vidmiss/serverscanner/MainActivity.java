@@ -36,7 +36,9 @@ public class MainActivity extends AppCompatActivity {
             webView.evaluateJavascript("document.getElementById('status').textContent = 'Scanning...';", null);
 
             new Thread(() -> {
+                int checked = 0;
                 int foundThisScan = 0;
+
                 try {
                     String[] parts = startIp.split(":");
                     String ipStr = parts[0];
@@ -47,31 +49,36 @@ public class MainActivity extends AppCompatActivity {
 
                     for (int i = 0; i < count && isScanning; i++) {
                         int lastOctet = (base + i) % 256;
-                        String testIp = octets[0] + "." + octets[1] + "." + octets[2] + "." + lastOctet;
+                        String testIp = octets[0] + "." + octets[1] + "." + octets[2] + "." + lastOctet + ":" + port;
+                        checked++;
 
-                        runOnUiThread(() -> webView.evaluateJavascript("log('Checking: " + testIp + ":" + port + "');", null));
+                        // Update UI every 100 checks
+                        if (checked % 100 == 0) {
+                            final int currentChecked = checked;
+                            runOnUiThread(() -> webView.evaluateJavascript(
+                                "log('Checked " + currentChecked + " IPs...');", null));
+                        }
 
                         try {
                             java.net.Socket socket = new java.net.Socket();
-                            socket.connect(new java.net.InetSocketAddress(testIp, port), 500);
+                            socket.connect(new java.net.InetSocketAddress(testIp.split(":")[0], port), 500);
                             socket.close();
 
                             foundThisScan++;
-                            String result = "Open port 25565";
                             runOnUiThread(() -> {
-                                webView.evaluateJavascript("addFound('" + testIp + ":" + port + "', '" + result + "');", null);
-                                webView.evaluateJavascript("log('FOUND: " + testIp + ":" + port + "');", null);
+                                webView.evaluateJavascript("addFound('" + testIp + "', 'Open port 25565');", null);
+                                webView.evaluateJavascript("log('✅ FOUND: " + testIp + "');", null);
                             });
                         } catch (Exception ignored) {}
 
-                        Thread.sleep(10); // Small delay for UI responsiveness
+                        Thread.sleep(5); // Small delay for responsiveness
                     }
 
                     // Scan finished
                     final int finalFound = foundThisScan;
                     runOnUiThread(() -> {
                         webView.evaluateJavascript("scanCompleted();", null);
-                        webView.evaluateJavascript("log('Scan completed. Found " + finalFound + " servers this session.');", null);
+                        webView.evaluateJavascript("log('✅ Scan completed. Checked " + checked + " IPs. Found " + finalFound + " servers.');", null);
                     });
 
                 } catch (Exception e) {
@@ -93,4 +100,4 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> webView.evaluateJavascript("log('Continuing from last point...');", null));
         }
     }
-                        }
+                            }
