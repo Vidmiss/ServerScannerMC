@@ -41,7 +41,7 @@ function startScan() {
     if (countInput.toLowerCase() === "devlog") {
         devMode = true;
         log("🔧 Developer Mode Activated - Detailed logs enabled");
-        devLog("Dev mode ON");
+        devLog("Dev mode ON - verbose logging active");
         document.getElementById('ipCount').value = "10000";
         return;
     }
@@ -59,6 +59,7 @@ function startScan() {
         window.Android.startScan(ip, count);
     } else {
         log("Test mode (no Java bridge detected)");
+        devLog("No Android bridge - running in browser test mode");
     }
 }
 
@@ -79,7 +80,7 @@ function continueScan() {
 function scanCompleted() {
     isScanning = false;
     document.getElementById('status').textContent = "Scan completed";
-    log("Scan completed.");
+    log("✅ Scan completed.");
     devLog("Scan finished successfully");
     
     const foundDiv = document.getElementById('found');
@@ -90,4 +91,4 @@ function scanCompleted() {
 
 // Initialize
 showTab(0);
-log("App ready. Type 'devlog' in IP Count field to enable developer mode.");
+log("App ready. Type 'devlog' in the IP Count field to enable developer mode.");
