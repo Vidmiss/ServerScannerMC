@@ -100,4 +100,4 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> webView.evaluateJavascript("log('Continuing from last point...');", null));
         }
     }
-                            }
+}
