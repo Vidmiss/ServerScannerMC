@@ -1,6 +1,7 @@
 let foundCount = 0;
 let isScanning = false;
 let devMode = false;
+let lastUsedIp = "0.0.0.0:25565";  // Remember last scan point
 
 function log(text) {
     const div = document.getElementById('log');
@@ -52,6 +53,7 @@ function startScan() {
     isScanning = true;
     
     const count = parseInt(countInput) || 10000;
+    lastUsedIp = ip;  // Save for continue
     
     log("Scan started with " + count + " IPs from " + ip);
     devLog("STARTING SCAN");
@@ -61,8 +63,6 @@ function startScan() {
 
     if (window.Android) {
         window.Android.startScan(ip, count);
-    } else {
-        log("Test mode - no Java bridge");
     }
 }
 
@@ -75,9 +75,17 @@ function stopScan() {
 }
 
 function continueScan() {
-    log("Continuing from last point...");
-    devLog("CONTINUE FROM LAST REQUESTED");
-    if (window.Android) window.Android.continueFromLast();
+    if (isScanning) return;
+    isScanning = true;
+    
+    log("Continuing from last point: " + lastUsedIp);
+    devLog("CONTINUE FROM LAST");
+    devLog("Resuming from: " + lastUsedIp);
+    document.getElementById('status').textContent = "Scanning...";
+
+    if (window.Android) {
+        window.Android.startScan(lastUsedIp, 10000);  // Continue with 10000 IPs
+    }
 }
 
 function scanCompleted() {
