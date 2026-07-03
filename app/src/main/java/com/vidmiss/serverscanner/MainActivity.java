@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
                         String testIp = octets[0] + "." + octets[1] + "." + octets[2] + "." + lastOctet + ":" + port;
                         checked++;
 
-                        // Update UI every 100 checks
                         if (checked % 100 == 0) {
                             final int currentChecked = checked;
                             runOnUiThread(() -> webView.evaluateJavascript(
@@ -71,14 +70,15 @@ public class MainActivity extends AppCompatActivity {
                             });
                         } catch (Exception ignored) {}
 
-                        Thread.sleep(5); // Small delay for responsiveness
+                        Thread.sleep(5);
                     }
 
                     // Scan finished
+                    final int finalChecked = checked;
                     final int finalFound = foundThisScan;
                     runOnUiThread(() -> {
                         webView.evaluateJavascript("scanCompleted();", null);
-                        webView.evaluateJavascript("log('✅ Scan completed. Checked " + checked + " IPs. Found " + finalFound + " servers.');", null);
+                        webView.evaluateJavascript("log('✅ Scan completed. Checked " + finalChecked + " IPs. Found " + finalFound + " servers.');", null);
                     });
 
                 } catch (Exception e) {
