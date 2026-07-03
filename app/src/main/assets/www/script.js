@@ -1,7 +1,7 @@
 let foundCount = 0;
 let isScanning = false;
 let devMode = false;
-let lastUsedIp = "0.0.0.0:25565";  // Remember last scan point
+let lastUsedIp = "0.0.0.0:25565";
 
 function log(text) {
     const div = document.getElementById('log');
@@ -53,7 +53,7 @@ function startScan() {
     isScanning = true;
     
     const count = parseInt(countInput) || 10000;
-    lastUsedIp = ip;  // Save for continue
+    lastUsedIp = ip;
     
     log("Scan started with " + count + " IPs from " + ip);
     devLog("STARTING SCAN");
@@ -75,16 +75,10 @@ function stopScan() {
 }
 
 function continueScan() {
-    if (isScanning) return;
-    isScanning = true;
-    
-    log("Continuing from last point: " + lastUsedIp);
-    devLog("CONTINUE FROM LAST");
-    devLog("Resuming from: " + lastUsedIp);
-    document.getElementById('status').textContent = "Scanning...";
-
+    log("Continuing from last saved point...");
+    devLog("CONTINUE FROM LAST REQUESTED");
     if (window.Android) {
-        window.Android.startScan(lastUsedIp, 10000);  // Continue with 10000 IPs
+        window.Android.continueFromLast();
     }
 }
 
