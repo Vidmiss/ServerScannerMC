@@ -67,21 +67,24 @@ public class MainActivity extends AppCompatActivity {
                             runOnUiThread(() -> webView.evaluateJavascript("log('Progress: " + current + " IPs checked...');", null));
                         }
 
+                        boolean isServer = false;
                         try {
                             java.net.Socket socket = new java.net.Socket();
-                            socket.connect(new java.net.InetSocketAddress(testIp.split(":")[0], port), 400);
+                            socket.connect(new java.net.InetSocketAddress(testIp.split(":")[0], port), 600);
                             socket.close();
-
-                            runOnUiThread(() -> {
-                                webView.evaluateJavascript("addFound('" + currentIp + "', 'Open port 25565');", null);
-                                webView.evaluateJavascript("log('✅ FOUND: " + currentIp + "');", null);
-                            });
+                            isServer = true;
                         } catch (Exception ignored) {}
 
-                        Thread.sleep(5);
+                        if (isServer) {
+                            runOnUiThread(() -> {
+                                webView.evaluateJavascript("addFound('" + currentIp + "', 'Open port 25565 (possible MC server)');", null);
+                                webView.evaluateJavascript("log('✅ FOUND: " + currentIp + "');", null);
+                            });
+                        }
+
+                        Thread.sleep(8);
                     }
 
-                    // Save the next IP for continue
                     String nextIp = calculateNextIp(startIp, checked);
                     prefs.edit().putString("lastIp", nextIp).apply();
 
