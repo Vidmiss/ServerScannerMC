@@ -11,7 +11,7 @@ function log(text) {
 function devLog(text) {
     if (!devMode) return;
     const div = document.getElementById('log');
-    div.innerHTML += `<div style="color:#00ff00; background:#000000; padding:3px 6px; margin:2px 0; font-family:monospace; white-space:pre; font-size:13px; line-height:1.4;">${text}</div>`;
+    div.innerHTML += `<div style="color:#00ff00; background:#000000; padding:2px 6px; margin:1px 0; font-family:monospace; font-size:13px; white-space:pre;">${text}</div>`;
     div.scrollTop = div.scrollHeight;
 }
 
@@ -22,7 +22,7 @@ function addFound(ip, info) {
     div.style.cssText = 'background:#1f1f1f; padding:12px; margin:8px 0; border-left:4px solid #00ff9d; border-radius:6px;';
     div.innerHTML = `<strong>\( {ip}</strong><br> \){info}`;
     document.getElementById('found').appendChild(div);
-    log("✅ Found server: " + ip);
+    log("✅ FOUND: " + ip);
 }
 
 function showTab(n) {
@@ -41,9 +41,9 @@ function startScan() {
     if (countInput.toLowerCase() === "devlog") {
         devMode = true;
         log("Developer Mode Activated");
-        devLog("=================================");
-        devLog("     DEVLOG MODE ENABLED");
-        devLog("=================================");
+        devLog("========================================");
+        devLog("          DEVLOG MODE ENABLED");
+        devLog("========================================");
         document.getElementById('ipCount').value = "10000";
         return;
     }
@@ -54,7 +54,9 @@ function startScan() {
     const count = parseInt(countInput) || 10000;
     
     log("Scan started with " + count + " IPs from " + ip);
-    devLog("START SCAN | Target: " + ip + " | Count: " + count);
+    devLog("STARTING SCAN");
+    devLog("Target : " + ip);
+    devLog("Count  : " + count);
     document.getElementById('status').textContent = "Scanning...";
 
     if (window.Android) {
@@ -68,13 +70,13 @@ function stopScan() {
     isScanning = false;
     if (window.Android) window.Android.stopScan();
     log("Scan stopped by user");
-    devLog("STOP command received");
+    devLog("STOP COMMAND RECEIVED");
     document.getElementById('status').textContent = "Stopped";
 }
 
 function continueScan() {
     log("Continuing from last point...");
-    devLog("Continue from last requested");
+    devLog("CONTINUE FROM LAST REQUESTED");
     if (window.Android) window.Android.continueFromLast();
 }
 
@@ -82,7 +84,7 @@ function scanCompleted() {
     isScanning = false;
     document.getElementById('status').textContent = "Scan completed";
     log("✅ Scan completed");
-    devLog("SCAN FINISHED");
+    devLog("SCAN FINISHED SUCCESSFULLY");
     
     const foundDiv = document.getElementById('found');
     if (foundCount === 0) {
@@ -92,4 +94,4 @@ function scanCompleted() {
 
 // Initialize
 showTab(0);
-log("App ready. Type 'devlog' in IP Count field for Termux-style detailed log.");
+log("App ready. Type 'devlog' in IP Count field for detailed scanning log.");
