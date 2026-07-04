@@ -20,8 +20,8 @@
     </div>
 
     <div class="buttons">
-        <button onclick="startScan()" id="startBtn" class="start">START SCAN</button>
-        <button onclick="stopScan()" id="stopBtn" class="stop">STOP</button>
+        <button onclick="startScan()" class="start">START SCAN</button>
+        <button onclick="stopScan()" class="stop">STOP</button>
     </div>
 
     <button onclick="continueScan()" class="continue">Continue from last</button>
@@ -29,8 +29,8 @@
     <div class="status" id="status">Ready</div>
 
     <div class="tabs">
-        <button onclick="showTab(0)" class="tab active" id="tab0btn">Log</button>
-        <button onclick="showTab(1)" class="tab" id="tab1btn">Found Servers</button>
+        <button onclick="showTab(0)" class="tab active">Log</button>
+        <button onclick="showTab(1)" class="tab">Found Servers (<span id="count">0</span>)</button>
     </div>
 
     <div id="tab0" class="tab-content">
