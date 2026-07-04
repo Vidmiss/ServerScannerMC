@@ -1,7 +1,6 @@
 let foundCount = 0;
 let isScanning = false;
 let devMode = false;
-let lastUsedIp = "0.0.0.0:25565";
 
 function log(text) {
     const div = document.getElementById('log');
@@ -22,7 +21,7 @@ function addFound(ip, info) {
     
     const div = document.createElement('div');
     div.style.cssText = 'background:#1f1f1f; padding:12px; margin:8px 0; border-left:4px solid #00ff9d; border-radius:6px;';
-    div.innerHTML = `<strong>${ip}</strong><br>${info}`;
+    div.innerHTML = `<strong>\( {ip}</strong><br> \){info}`;
     document.getElementById('found').appendChild(div);
     
     log("✅ FOUND: " + ip);
@@ -46,7 +45,7 @@ function renderFoundServers(servers) {
     servers.forEach(server => {
         const div = document.createElement('div');
         div.style.cssText = 'background:#1f1f1f; padding:12px; margin:8px 0; border-left:4px solid #00ff9d; border-radius:6px;';
-        div.innerHTML = `<strong>${server.ip}</strong><br>${server.info}`;
+        div.innerHTML = `<strong>\( {server.ip}</strong><br> \){server.info}`;
         foundDiv.appendChild(div);
     });
 }
@@ -54,6 +53,8 @@ function renderFoundServers(servers) {
 function loadFoundServers() {
     if (window.Android) {
         window.Android.loadFoundServers();
+    } else {
+        renderFoundServers([]);
     }
 }
 
@@ -65,7 +66,9 @@ function showTab(n) {
         el.classList.toggle('active', i === n);
     });
     
-    if (n === 1) loadFoundServers();
+    if (n === 1) {
+        loadFoundServers();
+    }
 }
 
 function startScan() {
@@ -86,7 +89,6 @@ function startScan() {
     isScanning = true;
     
     const count = parseInt(countInput) || 10000;
-    lastUsedIp = ip;
     
     log("Scan started with " + count + " IPs from " + ip);
     devLog("STARTING SCAN");
@@ -120,11 +122,6 @@ function scanCompleted() {
     document.getElementById('status').textContent = "Scan completed";
     log("✅ Scan completed");
     devLog("SCAN FINISHED SUCCESSFULLY");
-    
-    const foundDiv = document.getElementById('found');
-    if (foundCount === 0) {
-        foundDiv.innerHTML = '<div style="text-align:center; padding:40px; color:#888; font-size:18px;">No servers found :(</div>';
-    }
 }
 
 // Initialize
