@@ -34,18 +34,20 @@ function addFound(ip, info) {
 function renderFoundServers(servers) {
     const foundDiv = document.getElementById('found');
     foundDiv.innerHTML = '';
-    foundCount = servers.length;
-    document.getElementById('count').textContent = foundCount;
-
-    if (servers.length === 0) {
+    
+    if (!servers || servers.length === 0) {
         foundDiv.innerHTML = '<div style="text-align:center; padding:40px; color:#888; font-size:18px;">No servers found :(</div>';
+        document.getElementById('count').textContent = 0;
         return;
     }
+
+    foundCount = servers.length;
+    document.getElementById('count').textContent = foundCount;
 
     servers.forEach(server => {
         const div = document.createElement('div');
         div.style.cssText = 'background:#1f1f1f; padding:12px; margin:8px 0; border-left:4px solid #00ff9d; border-radius:6px;';
-        div.innerHTML = `<strong>\( {server.ip}</strong><br> \){server.info}`;
+        div.innerHTML = `<strong>\( {server.ip || 'Unknown IP'}</strong><br> \){server.info || 'Open port 25565'}`;
         foundDiv.appendChild(div);
     });
 }
