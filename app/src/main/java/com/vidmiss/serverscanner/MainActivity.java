@@ -137,8 +137,12 @@ public class MainActivity extends AppCompatActivity {
         public void loadFoundServers() {
             try {
                 String data = foundPrefs.getString("servers", "[]");
-                runOnUiThread(() -> webView.evaluateJavascript("renderFoundServers(" + data + ");", null));
-            } catch (Exception ignored) {}
+                runOnUiThread(() -> {
+                    webView.evaluateJavascript("renderFoundServers(" + data + ");", null);
+                });
+            } catch (Exception ignored) {
+                runOnUiThread(() -> webView.evaluateJavascript("renderFoundServers([]);", null));
+            }
         }
 
         @JavascriptInterface
@@ -157,4 +161,4 @@ public class MainActivity extends AppCompatActivity {
             startScan(lastIp, 10000);
         }
     }
-}
+                    }
