@@ -22,15 +22,33 @@ function addFound(ip, info) {
     
     const div = document.createElement('div');
     div.style.cssText = 'background:#1f1f1f; padding:12px; margin:8px 0; border-left:4px solid #00ff9d; border-radius:6px;';
-    div.innerHTML = `<strong>\( {ip}</strong><br> \){info}`;
+    div.innerHTML = `<strong>${ip}</strong><br>${info}`;
     document.getElementById('found').appendChild(div);
     
     log("✅ FOUND: " + ip);
     
-    // Save to persistent storage
     if (window.Android) {
         window.Android.saveFoundServer(ip, info);
     }
+}
+
+function renderFoundServers(servers) {
+    const foundDiv = document.getElementById('found');
+    foundDiv.innerHTML = '';
+    foundCount = servers.length;
+    document.getElementById('count').textContent = foundCount;
+
+    if (servers.length === 0) {
+        foundDiv.innerHTML = '<div style="text-align:center; padding:40px; color:#888; font-size:18px;">No servers found :(</div>';
+        return;
+    }
+
+    servers.forEach(server => {
+        const div = document.createElement('div');
+        div.style.cssText = 'background:#1f1f1f; padding:12px; margin:8px 0; border-left:4px solid #00ff9d; border-radius:6px;';
+        div.innerHTML = `<strong>${server.ip}</strong><br>${server.info}`;
+        foundDiv.appendChild(div);
+    });
 }
 
 function loadFoundServers() {
