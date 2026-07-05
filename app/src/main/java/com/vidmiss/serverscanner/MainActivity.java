@@ -137,9 +137,7 @@ public class MainActivity extends AppCompatActivity {
         public void loadFoundServers() {
             try {
                 String json = foundPrefs.getString("servers", "[]");
-                runOnUiThread(() -> {
-                    webView.evaluateJavascript("renderFoundServers(" + json + ");", null);
-                });
+                runOnUiThread(() -> webView.evaluateJavascript("renderFoundServers(" + json + ");", null));
             } catch (Exception e) {
                 runOnUiThread(() -> webView.evaluateJavascript("renderFoundServers([]);", null));
             }
