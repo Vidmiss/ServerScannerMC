@@ -15,19 +15,19 @@ function devLog(text) {
     div.scrollTop = div.scrollHeight;
 }
 
-function addFound(ip, info) {
+function addFound(ip) {
     foundCount++;
     document.getElementById('count').textContent = foundCount;
     
     const div = document.createElement('div');
     div.style.cssText = 'background:#1f1f1f; padding:12px; margin:8px 0; border-left:4px solid #00ff9d; border-radius:6px;';
-    div.innerHTML = `<strong>\( {ip}</strong><br> \){info}`;
+    div.innerHTML = `<strong>${ip}</strong>`;
     document.getElementById('found').appendChild(div);
     
     log("✅ FOUND: " + ip);
     
     if (window.Android) {
-        window.Android.saveFoundServer(ip, info);
+        window.Android.saveFoundServer(ip);
     }
 }
 
@@ -45,11 +45,10 @@ function renderFoundServers(servers) {
     document.getElementById('count').textContent = foundCount;
 
     servers.forEach(server => {
+        const ip = typeof server === 'string' ? server : (server.ip || server);
         const div = document.createElement('div');
         div.style.cssText = 'background:#1f1f1f; padding:12px; margin:8px 0; border-left:4px solid #00ff9d; border-radius:6px;';
-        const ip = server.ip || 'Unknown IP';
-        const info = server.info || 'Open port 25565 (possible MC server)';
-        div.innerHTML = `<strong>\( {ip}</strong><br> \){info}`;
+        div.innerHTML = `<strong>${ip}</strong>`;
         foundDiv.appendChild(div);
     });
 }
@@ -70,9 +69,7 @@ function showTab(n) {
         el.classList.toggle('active', i === n);
     });
     
-    if (n === 1) {
-        loadFoundServers();
-    }
+    if (n === 1) loadFoundServers();
 }
 
 function startScan() {
