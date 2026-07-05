@@ -80,9 +80,8 @@ public class MainActivity extends AppCompatActivity {
                         } catch (Exception ignored) {}
 
                         if (isServer) {
-                            String info = "Open port 25565 (possible MC server)";
                             runOnUiThread(() -> {
-                                webView.evaluateJavascript("addFound('" + currentIp + "', '" + info + "');", null);
+                                webView.evaluateJavascript("addFound('" + currentIp + "');", null);
                                 webView.evaluateJavascript("log('✅ FOUND: " + currentIp + "');", null);
                             });
                         }
@@ -122,12 +121,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @JavascriptInterface
-        public void saveFoundServer(String ip, String info) {
+        public void saveFoundServer(String ip) {
             try {
                 JSONArray servers = new JSONArray(foundPrefs.getString("servers", "[]"));
                 JSONObject server = new JSONObject();
                 server.put("ip", ip);
-                server.put("info", info);
                 servers.put(server);
                 foundPrefs.edit().putString("servers", servers.toString()).apply();
             } catch (Exception ignored) {}
@@ -159,4 +157,4 @@ public class MainActivity extends AppCompatActivity {
             startScan(lastIp, 10000);
         }
     }
-                    }
+}
