@@ -47,7 +47,7 @@ function renderFoundServers(servers) {
     servers.forEach(server => {
         const div = document.createElement('div');
         div.style.cssText = 'background:#1f1f1f; padding:12px; margin:8px 0; border-left:4px solid #00ff9d; border-radius:6px;';
-        const ip = server.ip || server.IP || 'Unknown IP';
+        const ip = server.ip || 'Unknown IP';
         const info = server.info || 'Open port 25565 (possible MC server)';
         div.innerHTML = `<strong>\( {ip}</strong><br> \){info}`;
         foundDiv.appendChild(div);
