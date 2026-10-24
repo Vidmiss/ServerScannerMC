@@ -34,6 +34,26 @@ public class MainActivity extends AppCompatActivity {
         webView.loadUrl("file:///android_asset/www/index.html");
     }
 
+    /** JSON is a valid JS literal except for raw U+2028/2029, so escape those. */
+    private static String toJsLiteral(JSONObject o) {
+        return o.toString().replace("\u2028", "\\u2028").replace("\u2029", "\\u2029");
+    }
+
+    /** Stores the server, replacing any earlier entry with the same ip:port. */
+    private synchronized void saveServer(JSONObject server) {
+        try {
+            JSONArray old = new JSONArray(foundPrefs.getString("servers", "[]"));
+            JSONArray out = new JSONArray();
+            String ip = server.optString("ip");
+            for (int i = 0; i < old.length(); i++) {
+                JSONObject e = old.optJSONObject(i);
+                if (e != null && !ip.equals(e.optString("ip"))) out.put(e);
+            }
+            out.put(server);
+            foundPrefs.edit().putString("servers", out.toString()).apply();
+        } catch (Exception ignored) {}
+    }
+
     public class AndroidInterface {
         @JavascriptInterface
         public void startScan(String startIp, int count) {
@@ -71,19 +91,14 @@ public class MainActivity extends AppCompatActivity {
                             runOnUiThread(() -> webView.evaluateJavascript("log('Progress: " + current + " IPs checked...');", null));
                         }
 
-                        boolean isServer = false;
-                        try {
-                            java.net.Socket socket = new java.net.Socket();
-                            socket.connect(new java.net.InetSocketAddress(testIp.split(":")[0], port), 600);
-                            socket.close();
-                            isServer = true;
-                        } catch (Exception ignored) {}
+                        final String hostOnly = testIp.split(":")[0];
+                        final int finalPort = port;
+                        JSONObject info = MinecraftPinger.query(hostOnly, finalPort, 600);
 
-                        if (isServer) {
-                            runOnUiThread(() -> {
-                                webView.evaluateJavascript("addFound('" + currentIp + "');", null);
-                                webView.evaluateJavascript("log('✅ FOUND: " + currentIp + "');", null);
-                            });
+                        if (info != null) {
+                            saveServer(info);
+                            final String json = toJsLiteral(info);
+                            runOnUiThread(() -> webView.evaluateJavascript("addFound(" + json + ");", null));
                         }
 
                         Thread.sleep(8);
@@ -121,20 +136,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @JavascriptInterface
-        public void saveFoundServer(String ip) {
-            try {
-                JSONArray servers = new JSONArray(foundPrefs.getString("servers", "[]"));
-                JSONObject server = new JSONObject();
-                server.put("ip", ip);
-                servers.put(server);
-                foundPrefs.edit().putString("servers", servers.toString()).apply();
-            } catch (Exception ignored) {}
-        }
-
-        @JavascriptInterface
         public void loadFoundServers() {
             try {
-                String json = foundPrefs.getString("servers", "[]");
+                String json = foundPrefs.getString("servers", "[]")
+                        .replace("\u2028", "\\u2028").replace("\u2029", "\\u2029");
                 runOnUiThread(() -> webView.evaluateJavascript("renderFoundServers(" + json + ");", null));
             } catch (Exception e) {
                 runOnUiThread(() -> webView.evaluateJavascript("renderFoundServers([]);", null));

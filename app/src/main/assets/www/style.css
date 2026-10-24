@@ -53,7 +53,39 @@ input {
     background:#1a1a1a; 
     padding:12px; 
     border-radius:8px; 
-    max-height:45vh; 
+    max-height:60vh; 
     overflow-y:auto; 
     min-height: 150px;
 }
+
+/* Found server cards */
+.srv-card {
+    background:#1f1f1f; padding:12px; margin:8px 0;
+    border-left:4px solid #00ff9d; border-radius:6px;
+}
+.srv-head { display:flex; align-items:center; gap:10px; }
+.srv-icon { width:48px; height:48px; image-rendering:pixelated; border-radius:4px; flex:none; }
+.srv-title { flex:1; min-width:0; }
+.srv-ip { font-weight:bold; font-size:16px; color:#fff; word-break:break-all; }
+.srv-sub { font-size:12px; color:#888; word-break:break-all; }
+.srv-badge {
+    flex:none; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:bold;
+    background:#333; color:#aaa;
+}
+.srv-badge.ok { background:#12392a; color:#00ff9d; }
+.srv-badge.warn { background:#4a3a10; color:#ffcc55; }
+.srv-motd {
+    margin:10px 0 6px; padding:8px 10px; background:#000; border-radius:4px;
+    font-family:monospace; font-size:13px; line-height:1.35; color:#aaa; overflow-wrap:anywhere;
+}
+.srv-info { margin-top:6px; }
+.srv-row { display:flex; gap:10px; padding:4px 0; border-top:1px solid #2a2a2a; font-size:14px; }
+.srv-label { flex:none; width:110px; color:#888; }
+.srv-value { flex:1; min-width:0; color:#ddd; overflow-wrap:anywhere; }
+.srv-raw { margin-top:8px; }
+.srv-raw summary { color:#00aa77; font-size:13px; cursor:pointer; }
+.srv-raw pre {
+    margin:6px 0 0; padding:8px; background:#000; color:#8f8; border-radius:4px;
+    font-size:11px; max-height:200px; overflow:auto; white-space:pre-wrap; word-break:break-all;
+}
+.srv-empty { text-align:center; padding:40px; color:#888; font-size:18px; }
